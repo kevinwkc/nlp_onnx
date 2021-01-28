@@ -1,0 +1,16 @@
+onnx==1.6.0
+onnxruntime
+
+#alibi==0.3.0
+#pandas==0.24.2
+#scikit-learn==0.21.3
+numpy
+#simpletransformers==0.4.0
+#tensorboardX==1.9
+torch==1.2.0
+
+#SENTIMENT
+transformers==2.1.0
+
+flask
+waitress
