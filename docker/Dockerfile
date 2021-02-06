@@ -15,10 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # && pip install -r req_ner.txt
 #         vim=2:8.1.0875-5 \
 #
-WORKDIR /data
+#WORKDIR /data
 
 VOLUME /data
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["./api.py"]
