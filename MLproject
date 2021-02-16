@@ -1,0 +1,14 @@
+name: docker-example
+
+conda_env: conda.yaml
+
+#docker_env:
+#  image: senti_v
+#  volumes: ["D:/temp/models/text/machine_comprehension/roberta/production/app_vol:/data"]
+
+entry_points:
+  main:
+    parameters:
+      alpha: {type: float, default: 0.2}
+      l1_ratio: {type: float, default: 0.1}
+    command: "python main.py --alpha {alpha} --l1-ratio {l1_ratio}"

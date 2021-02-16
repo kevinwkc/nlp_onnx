@@ -11,15 +11,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
          protobuf-compiler=3.6.1.3-2 \
          python-pip=18.1-5 \
          ca-certificates && \
-    rm -rf /var/lib/apt/lists/* && pip install -r req.txt
-# && pip install -r req_ner.txt
+    rm -rf /var/lib/apt/lists/* && pip install -r req.txt && pip install -r req_ner.txt
 #         vim=2:8.1.0875-5 \
-#
 #
 WORKDIR /data
 
 VOLUME /data
-EXPOSE 8080
+EXPOSE 8000
 
 ENTRYPOINT ["/bin/bash", "-c"]
-#CMD ["./api.py"]
+CMD ["./api.py"]
