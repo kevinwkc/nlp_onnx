@@ -1,0 +1,28 @@
+mlflow run . | tee run.log
+2021/02/16 15:58:40 INFO mlflow.projects.utils: === Created directory C:\Users\kev
+in\AppData\Local\Temp\tmp1lhwxe3j for downloading remote URIs passed to arguments
+of type 'path' ===
+2021/02/16 15:58:40 INFO mlflow.projects.backend.local: === Running command 'conda
+ activate mlflow-7e133d4fd05fe4ebbc02eb1f7d55a9d627dd4365 && python main.py --alph
+a 0.2 --l1-ratio 0.1' in run with ID '3a03d6aa91cf4ec2ad1de3b8bf818542' ===
+Registered model 'mybert' already exists. Creating a new version of this model...
+2021/02/16 15:58:44 INFO mlflow.tracking._model_registry.client: Waiting up to 300
+ seconds for model version to finish creation.                     Model name: myb
+ert, version 5
+Created version '5' of model 'mybert'.
+2021/02/16 15:58:44 INFO mlflow.projects: === Run (ID '3a03d6aa91cf4ec2ad1de3b8bf8
+18542') succeeded ===
+
+
+mlflow run . -e predict
+2021/02/16 15:59:25 INFO mlflow.projects.utils: === Created directory C:\Users\kev
+in\AppData\Local\Temp\tmpq6mc_8gm for downloading remote URIs passed to arguments
+of type 'path' ===
+2021/02/16 15:59:25 INFO mlflow.projects.backend.local: === Running command 'conda
+ activate mlflow-7e133d4fd05fe4ebbc02eb1f7d55a9d627dd4365 && python predict.py' in
+ run with ID '8073aee631f94fae9e587a556ca1b798' ===
+  sentiment                                                txt
+0  positive  I love this bakery so much and even though it'...
+1  negative  How About a rating of ZERO! This outfit is a t...
+2021/02/16 15:59:30 INFO mlflow.projects: === Run (ID '8073aee631f94fae9e587a556ca
+1b798') succeeded ===

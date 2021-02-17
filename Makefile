@@ -18,18 +18,44 @@ cuda:
 	docker run -it --rm --name my-cuda nvidia/cuda:11.2.0-runtime
 
 export:
+	export MLFLOW_TRACKING_URI=http://localhost:5000
+
 	export MLFLOW_S3_ENDPOINT_URL=https://s3.tor01.cloud-object-storage.appdomain.cloud
 	export AWS_PROFILE=ibm
-	export MLFLOW_TRACKING_URI=http://localhost:5000
+
 	export MYSQL_DATABASE="mydb" MYSQL_USER="flow" MYSQL_PASSWORD="flow" MYSQL_ROOT_PASSWORD="password"
+
+	mkdir {artifact-root,data}
 #https://mlflow-single-core-cluster-community.innosre-managed-586fba9d8cb47b239a7531fe80d39153-0000.us-south.containers.appdomain.cloud/
 
 run:
-	mlflow run . | tee run.log
+	#-rm -rf roberta-saved
+	mlflow run . --experiment-name RoBERTa | tee run.log
+
+predict:
+	mlflow run . -e predict
+
+predict_local: export
+	mlflow models predict -m runs:/8073aee631f94fae9e587a556ca1b798/model --input-path input.csv --content-type csv
+
+	#mlflow models predict -m models:/mybert/5 --input-path input.csv --content-type csv
+
+serve: export
+	mlflow models serve -m runs:/8073aee631f94fae9e587a556ca1b798/model -p 1234
+
+	#mlflow models serve -m models:/mybert/5 -p 1234
+
 
 server:
+	#https://medium.com/@moyukh_51433/mlflow-storing-artifacts-in-hdfs-and-in-an-sqlite-db-7be26971b6ab
 	#docker pull larribas/mlflow
-	docker run -d --rm -p 5000:5000 --name flow-server larribas/mlflow --host 0.0.0.0
+	docker run -d --rm -p 5000:5000 -v /d/temp/nlp_onnx/artifact-root:/artifact-root -v /d/temp/nlp_onnx/db:/db --name flow-server larribas/mlflow --backend-store-uri sqlite:////db/mlflow.db --default-artifact-root file:////tmp/artifact-root --host 0.0.0.0 -p 5000
+
+ui:
+	mlflow ui --backend-store-uri sqlite:///db/mlflowl.db --default-artifact-root /d/temp/nlp_onnx/artifact-root -h 0.0.0.0 -p 5000
+#--backend-store-uri sqlite:///d/temp/nlp_onnx/db/mlflowl.db --default-artifact-root file:///d/temp/nlp_onnx/artifact-roo
+sdebug:
+	docker exec -it flow-server /bin/bash
 
 up:
 	MYSQL_DATABASE="mydb" MYSQL_USER="flow" MYSQL_PASSWORD="flow" MYSQL_ROOT_PASSWORD="password" docker-compose up -d --build

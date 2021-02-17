@@ -12,3 +12,8 @@ entry_points:
       alpha: {type: float, default: 0.2}
       l1_ratio: {type: float, default: 0.1}
     command: "python main.py --alpha {alpha} --l1-ratio {l1_ratio}"
+
+  predict:
+    parameters:
+      hidden_units: {type: int, default: 20}
+    command: "python predict.py"
