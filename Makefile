@@ -1,22 +1,4 @@
-img:
-	docker build -t senti_v docker
-
-debug:
-	docker run -it --rm --entrypoint /bin/bash -v D:\temp\models\text\machine_comprehension\roberta\production\app_vol:/data  senti_v
-
-play:
-	docker exec -it my-senti_v /bin/bash
-
-api:
-	docker run -d -v D:\temp\models\text\machine_comprehension\roberta\production\app_vol:/data -p 8080:8080 --name my-senti_v senti_v
-
-onnx:
-	docker run -p 8888:8888 --rm -v /${PWD}/:/scripts/data  --name my-onnx onnx/onnx-ecosystem
-
-cuda:
-	#docker pull nvidia/cuda:11.2.0-runtime
-	docker run -it --rm --name my-cuda nvidia/cuda:11.2.0-runtime
-
+#RUN
 export:
 	export MLFLOW_TRACKING_URI=http://localhost:5000
 
@@ -28,12 +10,17 @@ export:
 	mkdir {artifact-root,data}
 #https://mlflow-single-core-cluster-community.innosre-managed-586fba9d8cb47b239a7531fe80d39153-0000.us-south.containers.appdomain.cloud/
 
+main:
+	#-rm -rf roberta-saved
+	MLFLOW_TRACKING_URI="http://127.0.0.1:5000" MLFLOW_ARTIFACT_URI="http://127.0.0.1:5000" python main.py
+
 run:
 	#-rm -rf roberta-saved
-	mlflow run . --experiment-name RoBERTa | tee run.log
+	MLFLOW_TRACKING_URI="http://127.0.0.1:5000" MLFLOW_ARTIFACT_URI="http://127.0.0.1:5000"  mlflow run .  --experiment-name test --no-conda #$(shell pwd)
+	#--experiment-name RoBERTa | tee run.log
 
 predict:
-	mlflow run . -e predict
+	mlflow run . -e predict --no-conda
 
 predict_local: export
 	mlflow models predict -m runs:/8073aee631f94fae9e587a556ca1b798/model --input-path input.csv --content-type csv
@@ -46,14 +33,23 @@ serve: export
 	#mlflow models serve -m models:/mybert/5 -p 1234
 
 
+#SERVER
 server:
 	#https://medium.com/@moyukh_51433/mlflow-storing-artifacts-in-hdfs-and-in-an-sqlite-db-7be26971b6ab
 	#docker pull larribas/mlflow
-	docker run -d --rm -p 5000:5000 -v /d/temp/nlp_onnx/artifact-root:/artifact-root -v /d/temp/nlp_onnx/db:/db --name flow-server larribas/mlflow --backend-store-uri sqlite:////db/mlflow.db --default-artifact-root file:////tmp/artifact-root --host 0.0.0.0 -p 5000
+	docker run -d --rm -p 5000:5000 -v $(shell pwd)/artifact-root:/artifact-root -v $(shell pwd)/db:/db --name flow-server larribas/mlflow --backend-store-uri sqlite:////db/mlflow.db --default-artifact-root /artifact-root --host 0.0.0.0 -p 5000
+	docker logs flow-server -f
+	#docker run -d --rm -p 5000:5000 -v $(shell pwd)/artifact-root:/artifact-root -v $(shell pwd)/db:/db --name flow-server larribas/mlflow --backend-store-uri sqlite:////db/mlflow.db --default-artifact-root /artifact-root --host 0.0.0.0 -p 5000
+	#docker run -d --rm -p 5000:5000 -v $(shell pwd)/artifact-root:/artifact-root -v $(shell pwd)/db:/db --name flow-server larribas/mlflow --backend-store-uri sqlite:////db/mlflow.db --default-artifact-root file:////tmp/artifact-root --host 0.0.0.0 -p 5000
+	docker ps -a
+
+ping:
+	curl -v telnet://127.0.0.1:5000
 
 ui:
-	mlflow ui --backend-store-uri sqlite:///db/mlflowl.db --default-artifact-root /d/temp/nlp_onnx/artifact-root -h 0.0.0.0 -p 5000
-#--backend-store-uri sqlite:///d/temp/nlp_onnx/db/mlflowl.db --default-artifact-root file:///d/temp/nlp_onnx/artifact-roo
+	mlflow ui --backend-store-uri sqlite:///db/mlflowl.db --default-artifact-root /tmp -h 0.0.0.0 -p 5000
+	#mlflow ui --backend-store-uri sqlite:///db/mlflowl.db --default-artifact-root ./artifact-root -h 0.0.0.0 -p 5000
+#--backend-store-uri sqlite://$(pwd)/db/mlflowl.db --default-artifact-root file://$(pwd)/artifact-roo
 sdebug:
 	docker exec -it flow-server /bin/bash
 
@@ -71,7 +67,29 @@ mydb:
 	docker logs -f mydb
 
 clean:
-	-docker kill mydb
-	-docker rm mydb
-	cd db && rm -rf ./*
-	rm -rf /tmp/mysql/*
+	-docker kill flow-server
+	-docker rm flow-server
+#	-docker kill mydb
+#	-docker rm mydb
+#	cd db && rm -rf ./*
+#	rm -rf /tmp/mysql/*
+
+#DEPRECATED
+img:
+	docker build -t senti_v docker
+
+debug:
+	docker run -it --rm --entrypoint /bin/bash -v D:\temp\models\text\machine_comprehension\roberta\production\app_vol:/data  senti_v
+
+play:
+	docker exec -it my-senti_v /bin/bash
+
+api:
+	docker run -d -v D:\temp\models\text\machine_comprehension\roberta\production\app_vol:/data -p 8080:8080 --name my-senti_v senti_v
+
+onnx:
+	docker run -p 8888:8888 --rm -v /$(shell pwd)/:/scripts/data  --name my-onnx onnx/onnx-ecosystem
+
+cuda:
+	#docker pull nvidia/cuda:11.2.0-runtime
+	docker run -it --rm --name my-cuda nvidia/cuda:11.2.0-runtime

@@ -1,3 +1,0 @@
-tensorflow
-git+https://github.com/deepmipt/bert.git@feat/multi_gpu
-deeppavlov

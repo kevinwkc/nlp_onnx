@@ -1,4 +1,6 @@
-mlflow run . | tee run.log
+pip install -r requirements.txt
+
+mlflow run .
 2021/02/16 15:58:40 INFO mlflow.projects.utils: === Created directory C:\Users\kev
 in\AppData\Local\Temp\tmp1lhwxe3j for downloading remote URIs passed to arguments
 of type 'path' ===

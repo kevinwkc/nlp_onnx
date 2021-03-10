@@ -1,7 +1,6 @@
 name: docker-example
 
 conda_env: conda.yaml
-
 #docker_env:
 #  image: senti_v
 #  volumes: ["D:/temp/models/text/machine_comprehension/roberta/production/app_vol:/data"]

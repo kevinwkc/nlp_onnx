@@ -1,0 +1,14 @@
+onnx
+onnxruntime
+
+pandas
+numpy
+torch
+tqdm
+
+#SENTIMENT
+transformers
+
+#CICD
+mlflow
+
